@@ -3,6 +3,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
 import { CldImage } from "next-cloudinary";
 import Swal from "sweetalert2";
+import UploadImages from "./UploadImages";
 
 interface CloudinaryImage {
   public_id: string;
@@ -13,16 +14,27 @@ interface CloudinaryImage {
 export default function Gallery() {
   const [images, setImages] = useState<CloudinaryImage[]>([]);
 
-  useEffect(() => {
-    const fetchImages = async () => {
-      const res = await fetch("/api/sign-image");
-      const data = await res.json();
-      setImages(data);
-      // console.log(data);
-    };
+  // useEffect(() => {
+  //   const fetchImages = async () => {
+  //     const res = await fetch("/api/sign-image");
+  //     const data = await res.json();
+  //     setImages(data);
+  //     // console.log(data);
+  //   };
 
+  //   fetchImages();
+  // }, []);
+  // Function to fetch images from the API
+  const fetchImages = async () => {
+    const res = await fetch("/api/sign-image");
+    const data = await res.json();
+    setImages(data);
+  };
+  // Run fetchImages when the component mounts
+  useEffect(() => {
     fetchImages();
   }, []);
+
   const handleDelete = async (public_id: string) => {
     // Show SweetAlert confirmation
     const result = await Swal.fire({
@@ -57,20 +69,25 @@ export default function Gallery() {
     }
   };
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {images?.map((img) => (
-        <div key={img.public_id}>
-          <CldImage
-            src={img.public_id}
-            width={img.width}
-            height={img.height}
-            alt={img.public_id}
-          />
-          <button onClick={() => handleDelete(img.public_id)}>
-            <DeleteIcon></DeleteIcon>{" "}
-          </button>
-        </div>
-      ))}
+    <div>
+      <section>
+        <UploadImages onUploadSuccess={fetchImages}></UploadImages>
+      </section>
+      <div className="grid grid-cols-4 gap-4">
+        {images?.map((img) => (
+          <div key={img.public_id}>
+            <CldImage
+              src={img.public_id}
+              width={img.width}
+              height={img.height}
+              alt={img.public_id}
+            />
+            <button onClick={() => handleDelete(img.public_id)}>
+              <DeleteIcon></DeleteIcon>{" "}
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
