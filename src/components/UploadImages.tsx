@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { CldUploadWidget } from "next-cloudinary";
 import Swal from "sweetalert2"; // Import SweetAlert2
@@ -8,7 +9,6 @@ interface UploadImagesProps {
 
 const UploadImages = ({ onUploadSuccess }: UploadImagesProps) => {
   // Handle upload success
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleUploadSuccess = (result: any) => {
     Swal.fire(
       "Uploaded!",
@@ -19,14 +19,15 @@ const UploadImages = ({ onUploadSuccess }: UploadImagesProps) => {
   };
 
   // Handle upload error
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleUploadError = (error: any) => {
     Swal.fire("Error!", "Failed to upload image. Please try again.", "error");
   };
 
   return (
     <div>
-      <h1>Upload Your Favorite Image</h1>
+      <h1 className="text-2xl font-semibold mb-4 text-black">
+        Upload Your Favorite Image
+      </h1>
       <CldUploadWidget
         signatureEndpoint="/api/sign-image"
         onUpload={handleUploadSuccess} // Trigger success on upload

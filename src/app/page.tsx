@@ -7,9 +7,7 @@ const HomePage = () => {
   return (
     <div>
       <h1>Home</h1>
-      {/* <UploadImages></UploadImages> */}
       <br />
-      {/* <Images></Images> */}
       <Gallery></Gallery>
     </div>
   );
