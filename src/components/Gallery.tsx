@@ -1,7 +1,5 @@
 "use client";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
-import { CldImage } from "next-cloudinary";
 import Swal from "sweetalert2";
 import UploadImages from "./UploadImages";
 import ImageCard from "./ImageCard";
@@ -16,6 +14,7 @@ interface CloudinaryImage {
 export default function Gallery() {
   const [images, setImages] = useState<CloudinaryImage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refresh, setRefresh] = useState(false);
 
   // Function to fetch images from the API
   const fetchImages = async () => {
@@ -27,7 +26,7 @@ export default function Gallery() {
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Failed to Load Image",
+        title: "Failed to Load Images",
         text: `${error}`,
       });
     } finally {
@@ -35,22 +34,40 @@ export default function Gallery() {
     }
   };
 
-  // Run fetchImages when the component mounts
+  // ✅ Run fetchImages when refresh changes
   useEffect(() => {
     fetchImages();
-  }, []);
+  }, [refresh]);
+
+  // ✅ Trigger revalidate and then refresh images
+  const handleUploadSuccess = async () => {
+    try {
+      await fetch("/api/revalidate", {
+        method: "POST",
+        body: JSON.stringify({ path: "/" }), // or the path you want to revalidate
+        headers: { "Content-Type": "application/json" },
+      });
+      setRefresh((prev) => !prev); // ✅ trigger fetchImages again
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Revalidation Failed",
+        text: `${error}`,
+      });
+    }
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <section className="mb-8 bg-white rounded-2xl shadow p-6">
-        <UploadImages onUploadSuccess={fetchImages}></UploadImages>
+        <UploadImages onUploadSuccess={handleUploadSuccess} />
       </section>
       <section className="bg-white rounded-2xl shadow p-6">
         <h2 className="text-2xl text-black font-semibold mb-4">
           Image Gallery
         </h2>
         {loading ? (
-          <Spinner></Spinner>
+          <Spinner />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {images?.map((img) => (
@@ -59,18 +76,7 @@ export default function Gallery() {
                 img={img}
                 images={images}
                 setImages={setImages}
-              ></ImageCard>
-              // <div key={img.public_id}>
-              //   <CldImage
-              //     src={img.public_id}
-              //     width={img.width}
-              //     height={img.height}
-              //     alt={img.public_id}
-              //   />
-              //   <button onClick={() => handleDelete(img.public_id)}>
-              //     <DeleteIcon></DeleteIcon>
-              //   </button>
-              // </div>
+              />
             ))}
           </div>
         )}

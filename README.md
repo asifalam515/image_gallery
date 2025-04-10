@@ -27,7 +27,7 @@ A fully responsive image gallery built with **Next.js**, **TypeScript**, and **M
 
 ## 📸 Demo
 
-_Coming soon..._ (or add your Vercel/Netlify link here)
+Live link:https://image-gallery-five-orpin.vercel.app/
 
 ---
 
@@ -36,6 +36,6 @@ _Coming soon..._ (or add your Vercel/Netlify link here)
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/image-gallery-app.git
+git clone https://github.com/asifalam515/image_gallery
 cd image-gallery-app
 ```

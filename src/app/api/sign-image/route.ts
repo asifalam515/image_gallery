@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 // 🔐 Configure Cloudinary
@@ -7,13 +8,9 @@ cloudinary.config({
   api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
-// ✅ POST: Used to generate signature for secure upload
+// POST: Generate secure signature for uploading
 export async function POST(request: Request) {
-  const body = (await request.json()) as {
-    paramsToSign: Record<string, string>;
-  };
-
+  const body = await request.json();
   const { paramsToSign } = body;
 
   const signature = cloudinary.utils.api_sign_request(
@@ -24,16 +21,21 @@ export async function POST(request: Request) {
   return NextResponse.json({ signature });
 }
 
-// ✅ GET: Used to fetch all uploaded images
+// GET: Fetch images from Cloudinary
 export async function GET() {
   try {
     const result = await cloudinary.api.resources({
       type: "upload",
-      prefix: "", // If you only want images from a folder, set: prefix: "your-folder-name/"
+      prefix: "",
       max_results: 100,
     });
 
-    return NextResponse.json(result.resources); // Send list of image objects
+    return new NextResponse(JSON.stringify(result.resources), {
+      status: 200,
+      headers: {
+        "Cache-Control": "no-store", // Always get fresh data
+      },
+    });
   } catch (error) {
     console.error("Error fetching images:", error);
     return NextResponse.json(
@@ -42,10 +44,11 @@ export async function GET() {
     );
   }
 }
-// ✅ DELETE: Delete an image by public_id
+
+// DELETE: Delete image by public_id
 export async function DELETE(request: Request) {
   try {
-    const { public_id } = (await request.json()) as { public_id: string };
+    const { public_id } = await request.json();
 
     if (!public_id) {
       return NextResponse.json(
@@ -54,16 +57,19 @@ export async function DELETE(request: Request) {
       );
     }
 
-    // Call Cloudinary API to delete the image
     const result = await cloudinary.uploader.destroy(public_id);
 
-    // If the image doesn't exist or other issues, handle accordingly
     if (result.result !== "ok") {
       return NextResponse.json(
         { error: "Failed to delete image" },
         { status: 500 }
       );
     }
+
+    // Revalidate after delete
+    await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/revalidate`, {
+      method: "POST",
+    });
 
     return NextResponse.json({ success: "Image deleted successfully", result });
   } catch (error) {
