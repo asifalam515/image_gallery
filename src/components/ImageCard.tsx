@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import DeleteIcon from "@mui/icons-material/Delete";
 import { CldImage } from "next-cloudinary";
 import Swal from "sweetalert2";
@@ -47,7 +46,7 @@ const ImageCard = ({ img, images, setImages }: any) => {
   return (
     <>
       {/* Image Card */}
-      <div
+      {/* <div
         className="card bg-base-100 shadow-sm cursor-pointer transition hover:shadow-md"
         onClick={() => document.getElementById(modalId)?.showModal()}
       >
@@ -72,12 +71,39 @@ const ImageCard = ({ img, images, setImages }: any) => {
             </button>
           </div>
         </div>
+      </div> */}
+      <div
+        className="card w-64 h-80 bg-base-100 shadow-sm cursor-pointer transition hover:shadow-md rounded-xl overflow-hidden"
+        onClick={() => document.getElementById(modalId)?.showModal()}
+      >
+        <figure className="h-48 overflow-hidden">
+          <CldImage
+            src={img.public_id}
+            width={img.width}
+            height={img.height}
+            alt={img.public_id}
+            className="w-full h-full object-cover"
+          />
+        </figure>
+        <div className="card-body p-4 flex flex-col justify-between">
+          <div className="card-actions justify-end">
+            <button
+              className="btn btn-sm btn-error text-white"
+              onClick={(e) => {
+                e.stopPropagation(); // prevent modal from opening
+                handleDelete(img.public_id);
+              }}
+            >
+              <DeleteIcon />
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* DaisyUI Modal */}
       <dialog id={modalId} className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
-          <h3 className="font-bold text-lg mb-4">Image Details</h3>
+          <h3 className="text-red  font-bold text-lg  mb-4">Image Details</h3>
           <CldImage
             src={img.public_id}
             width={img.width}
