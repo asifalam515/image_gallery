@@ -45,36 +45,14 @@ const ImageCard = ({ img, images, setImages }: any) => {
 
   return (
     <>
-      {/* Image Card */}
-      {/* <div
-        className="card bg-base-100 shadow-sm cursor-pointer transition hover:shadow-md"
-        onClick={() => document.getElementById(modalId)?.showModal()}
-      >
-        <figure>
-          <CldImage
-            src={img.public_id}
-            width={img.width}
-            height={img.height}
-            alt={img.public_id}
-          />
-        </figure>
-        <div className="card-body">
-          <div className="card-actions justify-end">
-            <button
-              className="btn btn-primary"
-              onClick={(e) => {
-                e.stopPropagation(); // prevent modal from opening
-                handleDelete(img.public_id);
-              }}
-            >
-              <DeleteIcon />
-            </button>
-          </div>
-        </div>
-      </div> */}
       <div
         className="card w-64 h-80 bg-base-100 shadow-sm cursor-pointer transition hover:shadow-md rounded-xl overflow-hidden"
-        onClick={() => document.getElementById(modalId)?.showModal()}
+        onClick={() => {
+          const modal = document.getElementById(
+            modalId
+          ) as HTMLDialogElement | null;
+          modal?.showModal();
+        }}
       >
         <figure className="h-48 overflow-hidden">
           <CldImage
