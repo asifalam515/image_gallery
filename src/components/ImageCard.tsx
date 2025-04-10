@@ -8,7 +8,13 @@ interface CloudinaryImage {
   height: number;
 }
 
-const ImageCard = ({ img, images, setImages }: any) => {
+interface ImageCardProps {
+  img: CloudinaryImage;
+  images: CloudinaryImage[];
+  setImages: (images: CloudinaryImage[]) => void;
+}
+
+const ImageCard: React.FC<ImageCardProps> = ({ img, images, setImages }) => {
   const modalId = `modal_${img.public_id.replace(/[^a-zA-Z0-9]/g, "")}`;
 
   const handleDelete = async (public_id: string) => {
@@ -34,7 +40,7 @@ const ImageCard = ({ img, images, setImages }: any) => {
       const data = await res.json();
       if (data.success) {
         Swal.fire("Deleted!", "Your image has been deleted.", "success");
-        setImages(images.filter((img: any) => img.public_id !== public_id));
+        setImages(images.filter((img) => img.public_id !== public_id));
       } else {
         Swal.fire("Error!", "Failed to delete image.", "error");
       }
@@ -81,7 +87,7 @@ const ImageCard = ({ img, images, setImages }: any) => {
       {/* DaisyUI Modal */}
       <dialog id={modalId} className="modal modal-bottom sm:modal-middle">
         <div className="modal-box">
-          <h3 className="text-red  font-bold text-lg  mb-4">Image Details</h3>
+          <h3 className="text-red font-bold text-lg mb-4">Image Details</h3>
           <CldImage
             src={img.public_id}
             width={img.width}
